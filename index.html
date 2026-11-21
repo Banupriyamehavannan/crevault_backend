@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f2">
+  <title>Elevate Certificates</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17241f;
+      --muted: #64736c;
+      --line: #dce4dd;
+      --paper: #fff;
+      --canvas: #f6f7f2;
+      --green: #176b4a;
+      --green-dark: #10583c;
+      --mint: #e6f3eb;
+      --amber: #fff2d6;
+      --red: #a43838;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); }
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    .topbar {
+      align-items: center;
+      background: rgba(255,255,255,.92);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      padding: 14px max(24px, calc((100% - 1160px) / 2));
+      position: sticky;
+      top: 0;
+      z-index: 3;
+    }
+    .brand { align-items: center; display: flex; gap: 10px; font-weight: 800; letter-spacing: -.03em; }
+    .brand-mark {
+      align-items: center; background: var(--green); border-radius: 10px; color: white;
+      display: inline-flex; height: 34px; justify-content: center; width: 34px;
+    }
+    nav { align-items: center; display: flex; gap: 22px; }
+    nav a { color: var(--muted); font-size: .9rem; font-weight: 650; text-decoration: none; }
+    nav a:hover { color: var(--green); }
+    .wrap { margin: 0 auto; max-width: 1160px; padding: 0 24px; }
+    .hero {
+      align-items: center; display: grid; gap: 40px; grid-template-columns: 1.3fr .7fr;
+      padding-bottom: 52px; padding-top: 68px;
+    }
+    .eyebrow { color: var(--green); font-size: .76rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { font-size: clamp(2.6rem, 6vw, 4.65rem); letter-spacing: -.065em; line-height: 1.02; margin: 15px 0 18px; max-width: 720px; }
+    .hero p { color: var(--muted); font-size: 1.08rem; line-height: 1.7; margin: 0; max-width: 600px; }
+    .hero-card {
+      background: var(--green); border-radius: 20px; color: white; min-height: 220px;
+      overflow: hidden; padding: 26px; position: relative;
+    }
+    .hero-card:after {
+      border: 1px solid rgba(255,255,255,.17); border-radius: 50%;
+      content: ""; height: 240px; position: absolute; right: -74px; top: 84px; width: 240px;
+    }
+    .hero-card strong { display: block; font-size: 1.1rem; margin-bottom: 9px; }
+    .hero-card p { color: rgba(255,255,255,.76); font-size: .94rem; max-width: 270px; }
+    .hero-card a { color: #d8f6df; display: inline-block; font-weight: 700; margin-top: 24px; text-decoration: none; }
+    section { padding: 28px 0 48px; }
+    .section-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: 20px; }
+    h2 { font-size: 1.75rem; letter-spacing: -.04em; margin: 7px 0 0; }
+    .section-heading p { color: var(--muted); margin: 0; }
+    .cards { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: 15px; padding: 22px; }
+    .card h3 { font-size: 1.08rem; letter-spacing: -.02em; margin: 0 0 6px; }
+    .card > p { color: var(--muted); font-size: .9rem; line-height: 1.5; margin: 0 0 20px; }
+    label { color: #35433c; display: block; font-size: .82rem; font-weight: 700; margin: 14px 0 6px; }
+    input, select, textarea {
+      background: white; border: 1px solid #cdd8cf; border-radius: 8px; color: var(--ink);
+      outline: none; padding: 11px 12px; width: 100%;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(23,107,74,.11); }
+    textarea { min-height: 84px; resize: vertical; }
+    button, .button {
+      align-items: center; background: var(--green); border: 0; border-radius: 8px;
+      color: white; cursor: pointer; display: inline-flex; font-weight: 750;
+      justify-content: center; margin-top: 16px; padding: 11px 15px; text-decoration: none;
+    }
+    button:hover, .button:hover { background: var(--green-dark); }
+    button:disabled { cursor: wait; opacity: .6; }
+    .secondary { background: white; border: 1px solid var(--line); color: var(--ink); }
+    .secondary:hover { background: #f1f5f1; }
+    .danger { background: #fff1ef; border: 1px solid #f0d0cc; color: var(--red); }
+    .danger:hover { background: #ffe4df; }
+    .result { border-radius: 8px; font-size: .88rem; line-height: 1.55; margin-top: 14px; overflow-wrap: anywhere; }
+    .result:empty { display: none; }
+    .result[data-tone="success"] { background: var(--mint); color: #15583b; padding: 11px 12px; }
+    .result[data-tone="error"] { background: #fff0ed; color: #943a32; padding: 11px 12px; }
+    .result[data-tone="info"] { background: #f1f4f1; color: #35433c; padding: 11px 12px; }
+    .result a { font-weight: 750; }
+    .admin-shell { background: #edf2ed; border-radius: 20px; padding: 24px; }
+    .admin-login { margin: 0 auto; max-width: 440px; }
+    .admin-dashboard[hidden], .admin-login[hidden] { display: none; }
+    .admin-toolbar { align-items: center; display: flex; justify-content: space-between; margin-bottom: 16px; }
+    .admin-tables { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; font-size: .84rem; min-width: 560px; width: 100%; }
+    th, td { border-bottom: 1px solid var(--line); padding: 11px 9px; text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; }
+    td .row-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+    td button { font-size: .76rem; margin: 0; padding: 7px 9px; }
+    .badge { background: #eef1ed; border-radius: 20px; display: inline-block; font-size: .75rem; font-weight: 750; padding: 4px 8px; }
+    .badge.valid, .badge.approved { background: var(--mint); color: #15583b; }
+    .badge.pending { background: var(--amber); color: #775318; }
+    .badge.revoked, .badge.rejected { background: #fff0ed; color: #943a32; }
+    .empty { color: var(--muted); font-size: .9rem; padding: 18px 8px; }
+    .docs-link { color: var(--green); font-weight: 750; }
+    footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; padding: 24px; text-align: center; }
+    @media (max-width: 850px) {
+      .hero { gap: 24px; grid-template-columns: 1fr; padding-top: 44px; }
+      .hero-card { min-height: 180px; }
+      .cards { grid-template-columns: 1fr 1fr; }
+      .admin-tables { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .topbar { align-items: flex-start; flex-direction: column; gap: 12px; padding: 12px 18px; }
+      nav { flex-wrap: wrap; gap: 12px 18px; }
+      nav a { font-size: .82rem; }
+      .wrap { padding: 0 16px; }
+      .hero { padding-bottom: 30px; }
+      .cards { grid-template-columns: 1fr; }
+      .section-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .admin-shell { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" style="text-decoration:none">
+      <span class="brand-mark">E</span><span>ELEVATE <span style="color:#176b4a">CERTIFICATES</span></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#citizen">Citizen services</a>
+      <a href="#admin">Admin</a>
+      <a class="docs-link" href="/api-docs" target="_blank" rel="noreferrer">API docs ↗</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Certificate services portal</div>
+        <h1>Apply, track, and verify—all in one place.</h1>
+        <p>Submit a certificate application and follow its status. Issued certificates can be checked online using their unique certificate ID.</p>
+      </div>
+      <aside class="hero-card">
+        <strong>Need to test an API directly?</strong>
+        <p>Explore every endpoint, request body, and response in the interactive API reference.</p>
+        <a href="/api-docs" target="_blank" rel="noreferrer">Open Swagger API docs ↗</a>
+      </aside>
+    </div>
+
+    <section id="citizen">
+      <div class="section-heading">
+        <div><div class="eyebrow">Public services</div><h2>Citizen services</h2></div>
+        <p>No account required to apply or check a status.</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <h3>Request a certificate</h3>
+          <p>Enter your details to create a new application.</p>
+          <form id="application-form">
+            <label for="app-name">Full name</label>
+            <input id="app-name" name="name" autocomplete="name" required>
+            <label for="app-phone">Phone</label>
+            <input id="app-phone" name="phone" type="tel" autocomplete="tel" required>
+            <label for="app-gender">Gender</label>
+            <input id="app-gender" name="gender" required>
+            <label for="app-city">City</label>
+            <input id="app-city" name="city" autocomplete="address-level2" required>
+            <label for="app-state">State</label>
+            <input id="app-state" name="state" autocomplete="address-level1" required>
+            <button type="submit">Submit application</button>
+            <div class="result" id="application-result" role="status" aria-live="polite"></div>
+          </form>
+        </article>
+
+        <article class="card">
+          <h3>Track an application</h3>
+          <p>Use the Application ID shown after submitting your request.</p>
+          <form id="track-form">
+            <label for="track-id">Application ID</label>
+            <input id="track-id" name="applicationId" placeholder="APP-..." required>
+            <button type="submit">Track application</button>
+            <div class="result" id="track-result" role="status" aria-live="polite"></div>
+          </form>
+        </article>
+
+        <article class="card">
+          <h3>Verify a certificate</h3>
+          <p>Check whether a certificate is currently valid or revoked.</p>
+          <form id="verify-form">
+            <label for="verify-id">Certificate ID</label>
+            <input id="verify-id" name="certificateId" placeholder="CERT-..." required>
+            <button type="submit">Verify certificate</button>
+            <div class="result" id="verify-result" role="status" aria-live="polite"></div>
+          </form>
+        </article>
+      </div>
+    </section>
+
+    <section id="admin">
+      <div class="section-heading">
+        <div><div class="eyebrow">Secure workspace</div><h2>Admin console</h2></div>
+        <p>Sign in with the admin credentials configured in your environment.</p>
+      </div>
+      <div class="admin-shell">
+        <form class="card admin-login" id="admin-login">
+          <h3>Admin sign in</h3>
+          <p>Manage applications and issued certificates.</p>
+          <label for="admin-username">Username</label>
+          <input id="admin-username" name="username" autocomplete="username" required>
+          <label for="admin-password">Password</label>
+          <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+          <button type="submit">Sign in</button>
+          <div class="result" id="login-result" role="status" aria-live="polite"></div>
+        </form>
+
+        <div class="admin-dashboard" id="admin-dashboard" hidden>
+          <div class="admin-toolbar">
+            <div><strong>Administration</strong><div style="color:#64736c;font-size:.86rem">Review requests and manage certificate status.</div></div>
+            <div>
+              <button class="secondary" id="refresh-admin" type="button">Refresh lists</button>
+              <button class="secondary" id="admin-logout" type="button">Sign out</button>
+            </div>
+          </div>
+          <div class="admin-tables">
+            <article class="card">
+              <h3>Applications</h3>
+              <div class="result" id="applications-result" role="status" aria-live="polite"></div>
+              <div class="table-wrap" id="applications-table"></div>
+            </article>
+            <article class="card">
+              <h3>Issued certificates</h3>
+              <div class="result" id="certificates-result" role="status" aria-live="polite"></div>
+              <div class="table-wrap" id="certificates-table"></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>ELEVATE Certificate Issuing &amp; Verification Platform · <a class="docs-link" href="/api-docs">Interactive API docs</a></footer>
+
+  <script>
+    const tokenKey = 'elevateAdminToken';
+    let adminToken = sessionStorage.getItem(tokenKey);
+    const byId = (id) => document.getElementById(id);
+
+    function showResult(element, message, tone) {
+      element.textContent = message;
+      element.dataset.tone = tone;
+    }
+
+    function showRecord(element, record) {
+      element.replaceChildren();
+      const list = document.createElement('dl');
+      for (const [key, value] of Object.entries(record)) {
+        const term = document.createElement('dt');
+        term.textContent = key.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
+        const description = document.createElement('dd');
+        description.textContent = value == null ? '' : String(value);
+        list.append(term, description);
+      }
+      element.append(list);
+      element.dataset.tone = 'success';
+    }
+
+    async function api(url, options = {}) {
+      const headers = { ...(options.headers || {}) };
+      if (options.body) headers['Content-Type'] = 'application/json';
+      if (adminToken) headers.Authorization = `Bearer ${adminToken}`;
+      const response = await fetch(url, { ...options, headers });
+      const contentType = response.headers.get('content-type') || '';
+      const data = contentType.includes('application/json')
+        ? await response.json()
+        : await response.text();
+      if (!response.ok) {
+        if (response.status === 401 && adminToken) signOut();
+        throw new Error(data.message || data || `Request failed (${response.status})`);
+      }
+      return data;
+    }
+
+    byId('application-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const result = byId('application-result');
+      try {
+        const body = Object.fromEntries(new FormData(event.currentTarget).entries());
+        const data = await api('/api/applications', {
+          method: 'POST',
+          body: JSON.stringify(body)
+        });
+        showResult(result, `${data.message}. Application ID: ${data.applicationId} · Status: ${data.status}`, 'success');
+        byId('track-id').value = data.applicationId;
+        event.currentTarget.reset();
+      } catch (error) {
+        showResult(result, error.message, 'error');
+      }
+    });
+
+    byId('track-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const result = byId('track-result');
+      const id = new FormData(event.currentTarget).get('applicationId').trim();
+      try {
+        showRecord(result, await api(`/api/applications/track/${encodeURIComponent(id)}`));
+      } catch (error) {
+        showResult(result, error.message, 'error');
+      }
+    });
+
+    byId('verify-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const result = byId('verify-result');
+      const id = new FormData(event.currentTarget).get('certificateId').trim();
+      try {
+        showRecord(result, await api(`/api/certificates/verify/${encodeURIComponent(id)}`));
+      } catch (error) {
+        showResult(result, error.message, 'error');
+      }
+    });
+
+    function renderTable(container, columns, rows, actionFactory) {
+      container.replaceChildren();
+      if (!rows.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = 'No records yet.';
+        container.append(empty);
+        return;
+      }
+
+      const table = document.createElement('table');
+      const head = document.createElement('thead');
+      const headRow = document.createElement('tr');
+      for (const column of columns) {
+        const cell = document.createElement('th');
+        cell.textContent = column.label;
+        headRow.append(cell);
+      }
+      const actionHead = document.createElement('th');
+      actionHead.textContent = 'Actions';
+      headRow.append(actionHead);
+      head.append(headRow);
+      table.append(head);
+
+      const body = document.createElement('tbody');
+      for (const row of rows) {
+        const tr = document.createElement('tr');
+        for (const column of columns) {
+          const td = document.createElement('td');
+          const value = row[column.key] == null ? '' : String(row[column.key]);
+          if (column.key === 'status') {
+            const badge = document.createElement('span');
+            badge.className = `badge ${value.toLowerCase()}`;
+            badge.textContent = value;
+            td.append(badge);
+          } else {
+            td.textContent = value;
+          }
+          tr.append(td);
+        }
+        const actions = document.createElement('td');
+        const actionGroup = document.createElement('div');
+        actionGroup.className = 'row-actions';
+        for (const action of actionFactory(row)) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = action.danger ? 'danger' : 'secondary';
+          button.textContent = action.label;
+          button.addEventListener('click', action.run);
+          actionGroup.append(button);
+        }
+        actions.append(actionGroup);
+        tr.append(actions);
+        body.append(tr);
+      }
+      table.append(body);
+      container.append(table);
+    }
+
+    async function loadAdminLists() {
+      showResult(byId('applications-result'), '', 'info');
+      showResult(byId('certificates-result'), '', 'info');
+      try {
+        const [applications, certificates] = await Promise.all([
+          api('/api/admin/applications'),
+          api('/api/admin/certificates')
+        ]);
+        renderTable(byId('applications-table'), [
+          { key: 'name', label: 'Name' },
+          { key: 'applicationId', label: 'Application ID' },
+          { key: 'status', label: 'Status' },
+          { key: 'submittedAt', label: 'Submitted' }
+        ], applications, (application) => application.status === 'Pending' ? [
+          {
+            label: 'Approve',
+            run: async () => {
+              try {
+                const issued = await api(`/api/admin/applications/${encodeURIComponent(application.applicationId)}/approve`, { method: 'PATCH' });
+                showResult(byId('applications-result'), `Approved. Certificate ID: ${issued.certificateId}`, 'success');
+                await loadAdminLists();
+              } catch (error) {
+                showResult(byId('applications-result'), error.message, 'error');
+              }
+            }
+          },
+          {
+            label: 'Reject',
+            danger: true,
+            run: async () => {
+              const reason = window.prompt('Optional rejection reason:');
+              if (reason === null) return;
+              try {
+                await api(`/api/admin/applications/${encodeURIComponent(application.applicationId)}/reject`, {
+                  method: 'PATCH',
+                  body: JSON.stringify({ reason })
+                });
+                showResult(byId('applications-result'), 'Application rejected.', 'success');
+                await loadAdminLists();
+              } catch (error) {
+                showResult(byId('applications-result'), error.message, 'error');
+              }
+            }
+          }
+        ] : []);
+
+        renderTable(byId('certificates-table'), [
+          { key: 'name', label: 'Name' },
+          { key: 'certificateId', label: 'Certificate ID' },
+          { key: 'status', label: 'Status' },
+          { key: 'issuedOn', label: 'Issued' }
+        ], certificates, (certificate) => certificate.status === 'Valid' ? [{
+          label: 'Revoke',
+          danger: true,
+          run: async () => {
+            if (!window.confirm(`Revoke certificate ${certificate.certificateId}?`)) return;
+            try {
+              await api(`/api/admin/certificates/${encodeURIComponent(certificate.certificateId)}/revoke`, { method: 'PATCH' });
+              showResult(byId('certificates-result'), 'Certificate revoked.', 'success');
+              await loadAdminLists();
+            } catch (error) {
+              showResult(byId('certificates-result'), error.message, 'error');
+            }
+          }
+        }] : []);
+      } catch (error) {
+        showResult(byId('applications-result'), error.message, 'error');
+      }
+    }
+
+    function showAdminDashboard() {
+      byId('admin-login').hidden = true;
+      byId('admin-dashboard').hidden = false;
+      loadAdminLists();
+    }
+
+    function signOut() {
+      adminToken = null;
+      sessionStorage.removeItem(tokenKey);
+      byId('admin-dashboard').hidden = true;
+      byId('admin-login').hidden = false;
+      byId('admin-login').reset();
+    }
+
+    byId('admin-login').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const credentials = Object.fromEntries(new FormData(event.currentTarget).entries());
+      try {
+        const data = await api('/api/admin/login', {
+          method: 'POST',
+          body: JSON.stringify(credentials)
+        });
+        adminToken = data.token;
+        sessionStorage.setItem(tokenKey, adminToken);
+        showResult(byId('login-result'), 'Signed in successfully.', 'success');
+        showAdminDashboard();
+      } catch (error) {
+        showResult(byId('login-result'), error.message, 'error');
+      }
+    });
+
+    byId('refresh-admin').addEventListener('click', loadAdminLists);
+    byId('admin-logout').addEventListener('click', signOut);
+    if (adminToken) showAdminDashboard();
+  </script>
+</body>
+</html>
